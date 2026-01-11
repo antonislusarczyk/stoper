@@ -68,33 +68,72 @@ run_stoper() {
     local running=false
     local sec=0
 
-    while true; do
-        echo "1) Start"
-        echo "2) Stop"
-        echo "3) Reset"
-        echo "4) Exit"
-        echo -n "Wybór: "
-        
-        read choice
+    echo "1) Start"
+    echo "2) Stop"
+    echo "3) Reset"
+    echo "4) Exit"
+    echo -n "Wybór: "
 
-        case $choice in
-            1)
-                # TODO: start
-                ;;
-            2)
-                # TODO: stop
-                ;;
-            3)
-                # TODO: reset
-                ;;
-            4)
-                exit 0
-                ;;
-            *)
-                echo "Nieznana opcja"
-                ;;
-        esac
+    # zmienna poczetek - czast oistatniego startu
+    # zmienna sumka - wszystkich zakonczonych odcinkow
+    poczatek=0;
+    sumka=0;
+    czyleci=0
+    #date +%s%N
+    while true; do
+      read -rsn1 -t 0.1 input
+      #echo "sumka po readzie: " $sumka
+
+      case $input in
+              1)
+                  # TODO: start
+                  # podmiernic poczetek
+                  #echo "start"
+                  poczatek=$(date +%s%N)
+                  czyleci=1
+                  ;;
+              2)
+                  # TODO: stop
+                  # dodac do sumki aktulany -0 poczatek
+                  #echo "stop"
+                  # shellcheck disable=SC1073
+                  akt=$(date +%s%N)
+                  sumka=$((sumka+akt-poczatek))
+                  czyleci=0
+                  poczatek=$(date +%s%N)
+                  ;;
+              3)
+                  # wyzerowac sumke - reset
+                  sumka=0;
+                  ;;
+              4)
+                  exit 0
+                  ;;
+              *)
+                  #echo "Nieznana opcja"
+                  ;;
+      esac
+      #echo "sumka po casie: " $sumka
+      # pobierz
+      # wypisz czas sumka + aktualny - poczek (chyba z ejstesmy w stopie to wtedy tylko sumka) w tej jednej linijce
+      #aktu=$(date +%s%N)
+      akt=$(date +%s%N)
+      local t=$(( $sumka ))
+      if [ "$czyleci" -eq 1 ]; then
+          #echo "leci t: " $t
+          t=$((t + akt - poczatek))
+      fi
+      t=$(( $t / 1000000000 ))
+
+
+      #echo "t: "$t
+      echo -ne "\r$(format_time "$t")  "
+      #sleep 0.1
+
     done
+
+
+
 }
 
 case "$1" in
